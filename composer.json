@@ -1,0 +1,50 @@
+{
+    "name": "survos/news-api-bundle",
+    "description": "Symfony bundle for interacting with NewsApiCDN using https://github.com/ToshY/NewsApiNet-PHP",
+    "keywords": [
+        "symfony-ux",
+        "symfony"
+    ],
+    "license": "MIT",
+    "type": "symfony-bundle",
+    "require": {
+        "php": "^8.4",
+        "symfony/config": "^7.3||^8.0",
+        "symfony/dependency-injection": "^7.3||^8.0",
+        "symfony/http-kernel": "^7.3||^8.0",
+        "twig/twig": "^3.4",
+        "zenstruck/bytes": "^1.0",
+        "jcobhams/newsapi": "*@dev"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.0",
+        "symfony/browser-kit": "^7.3||^8.0",
+        "symfony/framework-bundle": "^7.3||^8.0",
+        "symfony/phpunit-bridge": "^7.3||^8.0",
+        "symfony/twig-bundle": "^7.3||^8.0",
+        "symfony/var-dumper": "^7.3||^8.0",
+        "survos/simple-datatables-bundle": "^1.5",
+        "symfony/yaml": "^7.3||^8.0",
+        "symfony/http-client": "^7.3||^8.0",
+        "phpunit/phpunit": "^12"
+    },
+    "autoload": {
+        "psr-4": {
+            "Survos\\NewsApiBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Survos\\NewsApiBundle\\Tests\\": "Tests/"
+        }
+    },
+    "repositories": {
+        "survos_news_api": {
+            "type": "path",
+            "url": "/home/tac/g/tacman/newsapi-php"
+        }
+    },
+    "suggest": {
+        "survos/simple-datatables-bundle": "searchable/sortable tables when browsing"
+    }
+}
