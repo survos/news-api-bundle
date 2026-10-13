@@ -16,27 +16,27 @@ use Symfony\Contracts\Cache\CacheInterface;
 class NewsApiService
 {
     private NewsApi $newsApi;
+
     public function __construct(
-        private ?string $apiKey=null,
-        private array $config=[],
-        private ?CacheInterface $cache=null,
-        private ?LoggerInterface $logger=null,
-        private ?SluggerInterface $asciiSlugger=null,
-    )
-    {
+        private ?string $apiKey = null,
+        private array $config = [],
+        private ?CacheInterface $cache = null,
+        private ?LoggerInterface $logger = null,
+        private ?SluggerInterface $asciiSlugger = null,
+    ) {
         // can any calls be made without the key?
-        if ($apiKey !== null) {
+        if (null !== $apiKey) {
             $this->newsApi = new NewsApi($this->apiKey);
         } else {
             throw new \RuntimeException('You must provide a API key');
         }
-
     }
 
     public function getSources(string $language): object|array
     {
-        $sources = $this->cache->get('sources_' . $language,
-            fn(CacheItem $item) => $this->newsApi->getSources(language: $language));
+        $sources = $this->cache->get('sources_'.$language,
+            fn (CacheItem $item) => $this->newsApi->getSources(language: $language));
+
         return $sources->sources;
     }
 
@@ -45,7 +45,7 @@ class NewsApiService
         $sources = $this->getSources($language);
         dd($sources); // where should we move to model?
         foreach ($sources as $data) {
-            $data = (array)$data;
+            $data = (array) $data;
             $origLanguage = $data['language'];
             if (!$source = $this->entityManager->getRepository(Source::class)
                 ->findOneBy(['code' => $data['id']])) {
@@ -65,7 +65,6 @@ class NewsApiService
                 ->setLanguage($data['language']);
         }
         $this->entityManager->flush();
-
     }
 
     public function getLanguages()
@@ -73,32 +72,32 @@ class NewsApiService
         return $this->newsApi->getLanguages();
     }
 
-    public function search(string $language, string $q='tobacco', bool $topOnly=false)
+    public function search(string $language, string $q = 'tobacco', bool $topOnly = false)
     {
-        $key = sprintf("art_%s_%s", $language, $this->asciiSlugger->slug($q));
-//        return $this->newsApi->getEverything($q, language: $language);
+        $key = sprintf('art_%s_%s', $language, $this->asciiSlugger->slug($q));
+        //        return $this->newsApi->getEverything($q, language: $language);
         // @todo: set the cache time
-        $articles = $this->cache->get($key, fn(CacheItem $cacheItem) =>
-            $this->newsApi->getEverything($q, language: $language)
+        $articles = $this->cache->get($key, fn (CacheItem $cacheItem) => $this->newsApi->getEverything($q, language: $language)
         );
+
         return $articles;
     }
 
-    public function loadArticles(string $language, string $q='tobacco')
+    public function loadArticles(string $language, string $q = 'tobacco')
     {
         $slugger = new AsciiSlugger();
-        $key = sprintf("art_%s_%s", $language, $slugger->slug($q));
-        $articles = $this->cache->get($key, fn(CacheItem $cacheItem) =>
-            $this->newsApi->getEverything($q, language: $language)
+        $key = sprintf('art_%s_%s', $language, $slugger->slug($q));
+        $articles = $this->cache->get($key, fn (CacheItem $cacheItem) => $this->newsApi->getEverything($q, language: $language)
         );
         dd($articles);
+
         return $articles;
         foreach ($articles->articles as $idx => $a) {
             $s = $a->source;
             if (!$s->id) {
                 continue;
             }
-            dump('orig: ' . $language . '/' . $a->title);
+            dump('orig: '.$language.'/'.$a->title);
             $source = $this->sourceRepository->findOneBy(['code' => $s->id]);
             if (!$source) {
                 continue;
@@ -106,7 +105,7 @@ class NewsApiService
 
             $article = $this->articleRepository->get($a->url);
             assert($source, $s->id);
-//            $source->addArticle($article); // update count?
+            //            $source->addArticle($article); // update count?
             $article->setSource($source);
             $article->setUrl($a->url)
                 ->setAuthor($a->author)
@@ -123,5 +122,4 @@ class NewsApiService
         }
         $this->entityManager->flush();
     }
-
 }

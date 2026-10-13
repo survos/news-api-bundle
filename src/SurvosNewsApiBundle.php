@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /** generated from /home/tac/g/survos/survos/vendor/survos/maker-bundle/templates/skeleton/bundle/src/Bundle.tpl.php */
 
 namespace Survos\NewsApiBundle;
@@ -12,14 +14,11 @@ use Survos\SimpleDatatables\SurvosSimpleDatatablesBundle;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
 class SurvosNewsApiBundle extends AbstractBundle
 {
-
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
         // get all bundles https://symfony.com/doc/current/bundles/prepend_extension.html
@@ -48,11 +47,11 @@ class SurvosNewsApiBundle extends AbstractBundle
             ;
         }
 
-//        // twig classes, for news-api_url ?
-//        $builder
-//            ->autowire('survos.news-api_twig', TwigExtension::class)
-//            ->setAutoconfigured(true)
-//            ->addTag('twig.extension');
+        //        // twig classes, for news-api_url ?
+        //        $builder
+        //            ->autowire('survos.news-api_twig', TwigExtension::class)
+        //            ->setAutoconfigured(true)
+        //            ->addTag('twig.extension');
     }
 
     private function addZonesSection(ArrayNodeDefinition $rootNode): void
@@ -70,7 +69,6 @@ class SurvosNewsApiBundle extends AbstractBundle
             ->end()
             ->end()
             ->end();
-
     }
 
     public function configure(DefinitionConfigurator $definition): void
@@ -87,5 +85,4 @@ class SurvosNewsApiBundle extends AbstractBundle
 
         $this->addZonesSection($rootNode);
     }
-
 }

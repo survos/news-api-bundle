@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Survos\NewsApiBundle\Controller;
 
 use Survos\NewsApiBundle\Service\NewsApiService;
@@ -13,24 +15,24 @@ class NewsApiController extends AbstractController
 {
     public function __construct(
         private NewsApiService $newsApiService,
-        private $simpleDatatablesInstalled = false
-    )
-    {
+        private $simpleDatatablesInstalled = false,
+    ) {
         $this->checkSimpleDatatablesInstalled();
     }
 
     private function checkSimpleDatatablesInstalled()
     {
-        if (! $this->simpleDatatablesInstalled) {
+        if (!$this->simpleDatatablesInstalled) {
             throw new \LogicException("This page requires SimpleDatatables\n composer req survos/simple-datatables-bundle");
         }
     }
+
     #[Route('/languages', name: 'survos_news_api_languages', methods: ['GET'])]
     #[Template('@SurvosNewsApi/languages.html.twig')]
     public function languages(
-    ): Response|array
-    {
+    ): Response|array {
         $languages = $this->newsApiService->getLanguages();
+
         return [
             'languages' => $languages,
         ];
@@ -40,35 +42,32 @@ class NewsApiController extends AbstractController
     #[Template('@SurvosNewsApi/search.html.twig')]
     public function search(
         string $language,
-        #[MapQueryParameter] ?string $q=null
-    ): Response|array
-    {
+        #[MapQueryParameter] ?string $q = null,
+    ): Response|array {
         if ($q) {
             $response = $this->newsApiService->search($language, $q);
             $articles = $response->articles;
             $total = $response->totalResults;
+
             return [
                 'total' => $total,
                 'articles' => $articles,
             ];
-        } else {
-            return [];
-            // a nice search form
         }
 
-
+        return [];
+        // a nice search form
     }
 
     #[Route('/sources/{language}', name: 'survos_news_api_sources', methods: ['GET'])]
     #[Template('@SurvosNewsApi/sources.html.twig')]
-    public function sources(string $language=null): Response|array
+    public function sources(?string $language = null): Response|array
     {
         $this->checkSimpleDatatablesInstalled();
-        $sources  = $this->newsApiService->getSources($language);
+        $sources = $this->newsApiService->getSources($language);
+
         return [
             'sources' => $sources,
         ];
     }
-
-
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Survos\NewsApiBundle\Command;
 
 use Survos\NewsApiBundle\Service\NewsApiService;
@@ -21,25 +23,22 @@ final class NewsApiListCommand extends InvokableServiceCommand
 
     public function __construct(
         private readonly NewsApiService $newsApiService,
-    )
-    {
+    ) {
         parent::__construct();
     }
 
     public function __invoke(
-        IO                                                                                          $io,
-        #[Argument(description: 'endpoint (source, search)')] string        $endpoint='',
+        IO $io,
+        #[Argument(description: 'endpoint (source, search)')] string $endpoint = '',
         #[Option(description: 'filter by top')] bool $top = false,
-        #[Option(description: 'search string')] ?string $q=null,
-        #[Option(description: '2-letter language code')] string $locale='en',
-
-    ): int
-    {
+        #[Option(description: 'search string')] ?string $q = null,
+        #[Option(description: '2-letter language code')] string $locale = 'en',
+    ): int {
         if ($q) {
             $articles = $this->newsApiService->loadArticles($locale, $q);
             $table = new Table($io);
-            $table->setHeaderTitle($locale . "/" . $q);
-            $headers = ['Name', 'StorageUsed','FilesStored','Id'];
+            $table->setHeaderTitle($locale.'/'.$q);
+            $headers = ['Name', 'StorageUsed', 'FilesStored', 'Id'];
             $table->setHeaders($headers);
             foreach ($zones as $zone) {
                 $row = [];
@@ -52,13 +51,14 @@ final class NewsApiListCommand extends InvokableServiceCommand
                 $table->addRow($row);
             }
             $table->render();
+
             return self::SUCCESS;
         }
 
         if (!$zoneName) {
             $zoneName = $this->newsApiService->getStorageZone();
         }
-        assert($zoneName, "missing zone name");
+        assert($zoneName, 'missing zone name');
 
         $edgeStorageApi = $this->newsApiService->getEdgeApi($zoneName);
         $list = $edgeStorageApi->listFiles(
@@ -68,26 +68,23 @@ final class NewsApiListCommand extends InvokableServiceCommand
 
         // @todo: see if https://www.php.net/manual/en/class.numberformatter.php works to remove the dependency
         $table = new Table($io);
-        $table->setHeaderTitle($zoneName . "/" . $path);
-        $headers = ['ObjectName', 'Path','Length', 'Url'];
+        $table->setHeaderTitle($zoneName.'/'.$path);
+        $headers = ['ObjectName', 'Path', 'Length', 'Url'];
         $table->setHeaders($headers);
         foreach ($list as $file) {
             $row = [];
             foreach ($headers as $header) {
-                $row[$header] = $file[$header]??null;
+                $row[$header] = $file[$header] ?? null;
             }
             $row['Length'] = Bytes::parse($row['Length']); // "389.79 GB"
-            $row['Url'] = "<href=https://symfony.com>Symfony Homepage</>";
+            $row['Url'] = '<href=https://symfony.com>Symfony Homepage</>';
             $table->addRow($row);
         }
         $table->render();
         $this->io()->output()->writeln('<href=https://symfony.com>Symfony Homepage</>');
 
-        $io->success($this->getName() . ' success ' . $zoneName);
+        $io->success($this->getName().' success '.$zoneName);
+
         return self::SUCCESS;
     }
-
-
-
-
 }
